@@ -3,15 +3,13 @@
     "version": "1.0.0",
     "description": "Serverless movie tracker API",
     "scripts": {
-        "test": "node -r dotenv/config $(which jest) --watch --verbose false",
+        "test": "node -r dotenv/config $(which jest) --verbose false",
+        "local:test": "node -r dotenv/config $(which jest) --watch --verbose false",
         "package": "serverless package",
         "deploy:develop": "serverless deploy -s dev",
         "deploy:staging": "serverless deploy -s staging",
         "deploy:main": "serverless deploy -s prod",
-        "start": "serverless offline --verbose",
-        "eslint:check": "eslint . --ext .ts",
-        "prettier:check": "prettier --check .",
-        "prepare": "husky install"
+        "start": "serverless offline --verbose"
     },
     "engines": {
         "node": ">=16.0.0",
