@@ -1,0 +1,40 @@
+{
+    "name": "serverless-movie-tracker-api",
+    "version": "1.0.0",
+    "description": "Serverless movie tracker API",
+    "scripts": {
+        "test": "node -r dotenv/config $(which jest) --watch --verbose false",
+        "package": "serverless package",
+        "deploy:develop": "serverless deploy -s dev",
+        "deploy:staging": "serverless deploy -s staging",
+        "deploy:main": "serverless deploy -s prod",
+        "start": "serverless offline --verbose",
+        "eslint:check": "eslint . --ext .ts",
+        "prettier:check": "prettier --check .",
+        "prepare": "husky install"
+    },
+    "engines": {
+        "node": ">=16.0.0",
+        "npm": ">=7.0.0"
+    },
+    "devDependencies": {
+        "@aws-sdk/client-dynamodb": "^3.47.0",
+        "@aws-sdk/util-dynamodb": "^3.47.0",
+        "@serverless/typescript": "^2.69.1",
+        "@types/aws-lambda": "^8.10.17",
+        "@types/jest": "^29.1.1",
+        "@types/node": "^10.14.4",
+        "aws-sdk": "^2.433.0",
+        "dotenv": "^16.0.3",
+        "esbuild-jest": "^0.5.0",
+        "jest": "^29.1.2",
+        "serverless-dynamodb-local": "^0.2.38",
+        "serverless-esbuild": "^1.33.0",
+        "serverless-iam-roles-per-function": "^3.2.0-e97ab49",
+        "serverless-offline": "^11.0.0",
+        "serverless-webpack": "^5.10.0",
+        "typescript": "^3.4.1"
+    },
+    "author": "Oluwafemi Lawal",
+    "license": "MIT"
+}
