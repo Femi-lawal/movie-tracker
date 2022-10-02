@@ -1,0 +1,6 @@
+deployment:
+  region:
+    dev: us-west-1
+    test: us-west-2
+    qa: us-east-2
+    prod: us-east-1
