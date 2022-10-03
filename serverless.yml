@@ -55,7 +55,7 @@ functions:
         Resource: "*"      
       - Effect: Allow
         Action:
-          - dynamodb:Query
+          - dynamodb:Scan
         Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.MOVIES_TABLE}
 
   GetMovie:
