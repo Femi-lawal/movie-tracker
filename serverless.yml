@@ -1,0 +1,183 @@
+service: movie-tracker-application
+
+plugins:
+  - serverless-iam-roles-per-function
+  - serverless-dynamodb-local
+  - serverless-offline
+  - serverless-esbuild
+
+package:
+  individually: true
+
+provider:
+  name: aws
+  runtime: nodejs16.x
+  stage: ${opt:stage, 'dev'}
+  region: ${self:custom.deployment.region.${self:provider.stage}}
+  tracing:
+    lambda: true
+    apiGateway: true  
+  environment:
+    MOVIES_TABLE: movies-${self:provider.stage}
+
+custom:
+  deployment: ${file(config/deployment.yml):deployment}
+  esbuild:
+    bundle: true
+    sourcemap: true  
+  serverless-offline:
+    port: 3003
+
+  dynamodb:
+    start:
+      port: 8000
+      inMemory: true
+      migrate: true
+    stages:
+      - dev
+
+#FUNCTIONS
+functions:
+
+  ListMovies:
+    handler: src/functions/movies/list.handler
+    events:
+      - http:
+          method: get
+          path: movies
+          cors: true
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - logs:CreateLogStream
+          - logs:CreateLogGroup
+          - logs:PutLogEvents
+        Resource: "*"      
+      - Effect: Allow
+        Action:
+          - dynamodb:Scan
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.MOVIES_TABLE}
+
+  GetMovie:
+    handler: src/functions/movies/get.handler
+    events:
+      - http:
+          method: get
+          path: movies/{movieId}
+          cors: true
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - logs:CreateLogStream
+          - logs:CreateLogGroup
+          - logs:PutLogEvents
+        Resource: "*"      
+      - Effect: Allow
+        Action:
+          - dynamodb:GetItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.MOVIES_TABLE}
+
+  CreateMovie:
+    handler: src/functions/movies/create.handler
+    events:
+      - http:
+          method: post
+          path: movies
+          cors: true        
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - logs:CreateLogStream
+          - logs:CreateLogGroup
+          - logs:PutLogEvents
+        Resource: "*"      
+      - Effect: Allow
+        Action:
+          - dynamodb:PutItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.MOVIES_TABLE}          
+
+  UpdateMovie:
+    handler: src/functions/movies/update.handler
+    events:
+      - http:
+          method: put
+          path: movies/{movieId}
+          cors: true
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - logs:CreateLogStream
+          - logs:CreateLogGroup
+          - logs:PutLogEvents
+        Resource: "*"      
+      - Effect: Allow
+        Action:
+          - dynamodb:UpdateItem
+          - dynamodb:GetItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.MOVIES_TABLE}   
+
+  DeleteMovie:
+    handler: src/functions/movies/delete.handler
+    events:
+      - http:
+          method: delete
+          path: movies/{movieId}
+          cors: true
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - logs:CreateLogStream
+          - logs:CreateLogGroup
+          - logs:PutLogEvents
+        Resource: "*"      
+      - Effect: Allow
+        Action:
+          - dynamodb:DeleteItem
+          - dynamodb:GetItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.MOVIES_TABLE}
+
+#RESOURCES
+resources:
+  Resources:
+    # movie AWS resources
+    GatewayResponseDefault4XX:
+      Type: AWS::ApiGateway::GatewayResponse
+      Properties:
+        ResponseParameters:
+          gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+          gatewayresponse.header.Access-Control-Allow-Headers: "'*'"
+          gatewayresponse.header.Access-Control-Allow-Methods: "'*'"
+        ResponseType: DEFAULT_4XX
+        RestApiId:
+          Ref: ApiGatewayRestApi    
+    MovieTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: movieId
+            AttributeType: S                   
+        KeySchema:
+          - AttributeName: movieId
+            KeyType: HASH            
+        BillingMode: PAY_PER_REQUEST
+        TableName: ${self:provider.environment.MOVIES_TABLE}
+    ListMoviesLogGroup:
+      Type: AWS::Logs::LogGroup
+      Properties:
+        RetentionInDays: 14
+    GetMovieLogGroup:
+      Type: AWS::Logs::LogGroup
+      Properties:
+        RetentionInDays: 14
+    CreateMovieLogGroup:
+      Type: AWS::Logs::LogGroup
+      Properties:
+        RetentionInDays: 14
+    UpdateMovieLogGroup:
+      Type: AWS::Logs::LogGroup
+      Properties:
+        RetentionInDays: 14
+    DeleteMovieLogGroup:
+      Type: AWS::Logs::LogGroup
+      Properties:
+        RetentionInDays: 14
