@@ -1,0 +1,18 @@
+version: 0.2
+phases:
+  install:
+    runtime-versions:
+      nodejs: 16
+  pre_build:
+    commands:
+      - echo "Running pre build commands"
+      - npm install -g serverless
+  build:
+    commands:
+      - echo "Running build commands"
+      - npm ci
+      - npm i -D serverless-iam-roles-per-function
+  post_build: 
+    commands:
+      - echo "Running post build commands"
+      - sls deploy --verbose --stage $STAGE       
