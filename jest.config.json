@@ -1,0 +1,6 @@
+{
+  "transform": {
+    "^.+\\.(j|t)sx?$": "esbuild-jest"
+  },
+  "verbose": true
+}
