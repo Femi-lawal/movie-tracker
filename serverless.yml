@@ -150,7 +150,6 @@ resources:
         ResponseType: DEFAULT_4XX
         RestApiId:
           Ref: ApiGatewayRestApi    
-
     MovieTable:
       Type: AWS::DynamoDB::Table
       Properties:
@@ -162,3 +161,23 @@ resources:
             KeyType: HASH            
         BillingMode: PAY_PER_REQUEST
         TableName: ${self:provider.environment.MOVIES_TABLE}
+    ListMoviesLogGroup:
+      Type: AWS::Logs::LogGroup
+      Properties:
+        RetentionInDays: 14
+    GetMovieLogGroup:
+      Type: AWS::Logs::LogGroup
+      Properties:
+        RetentionInDays: 14
+    CreateMovieLogGroup:
+      Type: AWS::Logs::LogGroup
+      Properties:
+        RetentionInDays: 14
+    UpdateMovieLogGroup:
+      Type: AWS::Logs::LogGroup
+      Properties:
+        RetentionInDays: 14
+    DeleteMovieLogGroup:
+      Type: AWS::Logs::LogGroup
+      Properties:
+        RetentionInDays: 14
